@@ -12,16 +12,6 @@ from bfcl.model_handler.utils import (
 )
 from openai import OpenAI
 
-# TODO 
-# none type not subscriptable
-# do_nothing method
-# 38 missed b/c optional params
-# .... all the TODOs in here
-# TODO 
-
-
-
-
 class GoGoAgentHandler(BaseHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
@@ -41,8 +31,6 @@ class GoGoAgentHandler(BaseHandler):
 
         return decoded_output
 
-
-
     # TODO how to use the util version of this?
     def convert_to_function_call(self, function_call_list):
         if type(function_call_list) == dict:
@@ -61,9 +49,8 @@ class GoGoAgentHandler(BaseHandler):
 
         return execution_list
 
-
     def decode_execute(self, result):
-        # use util version of this
+        # TODO use util version of this
         function_call = self.convert_to_function_call(result)
         return function_call
 
@@ -74,17 +61,6 @@ class GoGoAgentHandler(BaseHandler):
             params = invoked_function["arguments"]
             decoded_output.append({name: params})
         return decoded_output
-
-    def doldecode_execute(self, result):
-        result = result
-        if isinstance(result, list):
-            tool_calls = result
-        elif isinstance(result, dict):
-            tool_calls = result.get("tool_calls", [])
-        else:
-            tool_calls = []
-        function_call = self.xlam_json_to_python_tool_calls(tool_calls)
-        return function_call
 
     ### NON FC methods *** 
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
@@ -98,7 +74,6 @@ class GoGoAgentHandler(BaseHandler):
         )
 
         return {"message": [], "function": functions}
-
 
     def _parse_query_response_prompting(self, api_response: any) -> dict:
         try:
@@ -129,22 +104,6 @@ class GoGoAgentHandler(BaseHandler):
             "output_token": 0
         }
         return x
-
-    def old__parse_query_response_prompting(self, api_response: any) -> dict:
-        return self._parse_query_response_FC(api_response)
-
-        if api_response["choices"][0]["message"]["tool_calls"] != []:
-            return {
-                "model_responses": api_response["choices"][0]["message"]["tool_calls"],
-                "input_token": 0,
-                "output_token": 0,
-            }
-        else:
-            return {
-                "model_responses": api_response["choices"][0]["message"]["content"],
-                "input_token": 0,
-                "output_token": 0,
-            }
 
     def add_first_turn_message_prompting(
         self, inference_data: dict, first_turn_message: list[dict]
@@ -181,6 +140,7 @@ class GoGoAgentHandler(BaseHandler):
             )
 
         return inference_data
+
     def convert_to_dict(self, input_str):
         """
         Convert a JSON-formatted string into a dictionary of tool calls and their arguments.
@@ -209,8 +169,6 @@ class GoGoAgentHandler(BaseHandler):
     def _query_prompting(self, inference_data: dict):
         function: list[dict] = inference_data["function"]
         message: list[dict] = inference_data["message"]
-        # TODO don't add it here ... move to API
-        function.append({"name": "do_nothing", "description": "Do nothing", "parameters": {}})
 
         inference_data["inference_input_log"] = {
             "message": repr(message),
@@ -220,87 +178,3 @@ class GoGoAgentHandler(BaseHandler):
         api_response = self.client.chat.completions.create(messages=message, tools=function, model=self.model_name)
 
         return api_response
-
-    #### FC methods ####
-
-    def _compile_tools(self, inference_data: dict, test_entry: dict) -> dict:
-        functions: list = test_entry["function"]
-        test_category: str = test_entry["id"].rsplit("_", 1)[0]
-
-        functions = func_doc_language_specific_pre_processing(functions, test_category)
-        tools = convert_to_tool(functions, GORILLA_TO_OPENAPI, self.model_style)
-
-        inference_data["tools"] = tools
-
-        return inference_data
-
-    def _parse_query_response_FC(self, api_response: any) -> dict:
-        try:
-            model_responses = [
-                {func_call.function.name: func_call.function.arguments}
-                for func_call in api_response.choices[0].message.tool_calls
-            ]
-            tool_call_ids = [
-                func_call.id for func_call in api_response.choices[0].message.tool_calls
-            ]
-            tool_call_func_names = [
-                func_call.function.name
-                for func_call in api_response.choices[0].message.tool_calls
-            ]
-        except:
-            model_responses = api_response.choices[0].message.content
-            tool_call_ids = []
-            tool_call_func_names = []
-
-        model_responses_message_for_chat_history = api_response.choices[0].message
-
-        return {
-            "model_responses": model_responses,
-            "model_responses_message_for_chat_history": model_responses_message_for_chat_history,
-            "tool_call_ids": tool_call_ids,
-            "tool_call_func_names": tool_call_func_names,
-            "input_token": 0,
-            "output_token": 0
-        }
-
-    def add_first_turn_message_FC(
-        self, inference_data: dict, first_turn_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(first_turn_message)
-        return inference_data
-
-    def _add_next_turn_user_message_FC(
-        self, inference_data: dict, user_message: list[dict]
-    ) -> dict:
-        inference_data["message"].extend(user_message)
-        return inference_data
-
-    def _add_assistant_message_FC(
-        self, inference_data: dict, model_response_data: dict
-    ) -> dict:
-        inference_data["message"].append(
-            model_response_data["model_responses_message_for_chat_history"]
-        )
-        return inference_data
-
-    def _add_execution_results_FC(
-        self,
-        inference_data: dict,
-        execution_results: list[str],
-        model_response_data: dict,
-    ) -> dict:
-        # Add the execution results to the current round result, one at a time
-        for execution_result, tool_call_id, tool_call_func_name in zip(
-            execution_results,
-            model_response_data["tool_call_ids"],
-            model_response_data["tool_call_func_names"],
-        ):
-            tool_message = {
-                "tool_call_id": tool_call_id,
-                "role": "tool",
-                "name": tool_call_func_name,
-                "content": execution_result,
-            }
-            inference_data["message"].append(tool_message)
-
-        return inference_data
