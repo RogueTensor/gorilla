@@ -20,6 +20,7 @@ from bfcl.model_handler.proprietary_model.nexus import NexusHandler
 from bfcl.model_handler.proprietary_model.nvidia import NvidiaHandler
 from bfcl.model_handler.proprietary_model.openai import OpenAIHandler
 from bfcl.model_handler.proprietary_model.yi import YiHandler
+from bfcl.model_handler.proprietary_model.gogoagent import GoGoAgentHandler
 
 # TODO: Add Deepseek V2 and Gemma V2
 handler_map = {
@@ -92,6 +93,7 @@ handler_map = {
     "ibm-granite/granite-20b-functioncalling": GraniteHandler,
     # "MadeAgents/Hammer-7b": HammerHandler,  # TODO: Update handler once they have a multi-turn format
     "THUDM/glm-4-9b-chat": GLMHandler,
+    "BitAgent/GoGoAgent": GoGoAgentHandler,
     
     # Deprecated/outdated models, no longer on the leaderboard
     # "gorilla-openfunctions-v0": GorillaHandler,

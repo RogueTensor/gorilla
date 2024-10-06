@@ -497,6 +497,12 @@ MODEL_METADATA_MAPPING = {
         "Microsoft",
         "MIT",
     ],
+    "BitAgent/GoGoAgent": [
+        "GoGoAgent",
+        "https://gogoagent.ai",
+        "BitAgent",
+        "Proprietary",
+    ],
 }
 
 INPUT_PRICE_PER_MILLION_TOKEN = {
@@ -637,4 +643,5 @@ NO_COST_MODELS = [
     "Salesforce/xLAM-7b-r",
     "Salesforce/xLAM-8x7b-r",
     "Salesforce/xLAM-8x22b-r",
+    "BitAgent/GoGoAgent",
 ]
