@@ -16,7 +16,7 @@ class GoGoAgentHandler(BaseHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.model_style = ModelStyle.OpenAI
-        self.base_url = "https://api.gogoagent.ai/query_vllm"
+        self.base_url = "https://api.gogoagent.ai/"
         self.client = OpenAI(base_url=self.base_url, api_key=os.getenv("GOGOAGENT_API_KEY"))
 
     def decode_ast(self, result, language="Python"):
@@ -53,14 +53,6 @@ class GoGoAgentHandler(BaseHandler):
         # TODO use util version of this
         function_call = self.convert_to_function_call(result)
         return function_call
-
-    def doldecode_ast(self, result, language="Python"):
-        decoded_output = []
-        for invoked_function in result:
-            name = invoked_function["name"]
-            params = invoked_function["arguments"]
-            decoded_output.append({name: params})
-        return decoded_output
 
     ### NON FC methods *** 
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
