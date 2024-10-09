@@ -71,12 +71,7 @@ To run the executable test categories, there are 4 API keys to include:
 3. OMDB API: http://www.omdbapi.com/apikey.aspx
 4. Geocode API: https://geocode.maps.co/
 
-The `apply_function_credential_config.py` will automatically search for dataset files in the default `./data/` directory and replace the placeholder values with the actual API keys.
-After you have filled in the necessary values in the `.env` file, you can run the following command to apply the real API keys to the dataset files.
-
-```bash
-python apply_function_credential_config.py
-```
+The evaluation script will automatically search for dataset files in the default `./data/` directory and replace the placeholder values with the actual API keys you provided in the `.env` file.
 
 ## Evaluating different models on the BFCL
 
@@ -132,9 +127,12 @@ Below is _a table of models we support_ to run our leaderboard evaluation agains
 |databrick-dbrx-instruct | Prompt|
 |deepseek-ai/deepseek-coder-6.7b-instruct 💻| Prompt|
 |firefunction-{v1,v2}-FC | Function Calling|
-|gemini-1.0-pro-FC | Function Calling|
-|gemini-1.5-pro-preview-{0409,0514}-FC | Function Calling|
-|gemini-1.5-flash-preview-0514-FC | Function Calling|
+|gemini-1.0-pro-{001,002}-FC | Function Calling|
+|gemini-1.0-pro-{001,002} | Prompt|
+|gemini-1.5-pro-{001,002}-FC | Function Calling|
+|gemini-1.5-pro-{001,002} | Prompt|
+|gemini-1.5-flash-{001,002}-FC | Function Calling|
+|gemini-1.5-flash-{001,002} | Prompt|
 |glaiveai/glaive-function-calling-v1 💻| Function Calling|
 |gpt-3.5-turbo-0125-FC| Function Calling|
 |gpt-3.5-turbo-0125| Prompt|
@@ -149,7 +147,11 @@ Below is _a table of models we support_ to run our leaderboard evaluation agains
 |google/gemma-7b-it 💻| Prompt|
 |meetkai/functionary-medium-v3.1-FC| Function Calling|
 |meetkai/functionary-small-{v3.1,v3.2}-FC| Function Calling|
-|meta-llama/Meta-Llama-3-{8B,70B}-Instruct | Prompt|
+|meta-llama/Meta-Llama-3-{8B,70B}-Instruct 💻| Prompt|
+|meta-llama/Llama-3.1-{8B,70B}-Instruct-FC 💻| Function Calling|
+|meta-llama/Llama-3.1-{8B,70B}-Instruct 💻| Prompt|
+|meta-llama/Llama-3.2-{1B,3B}-Instruct-FC 💻| Function Calling|
+|meta-llama/Llama-3.2-{1B,3B}-Instruct 💻| Prompt|
 |open-mixtral-{8x7b,8x22b} | Prompt|
 |open-mixtral-8x22b-FC | Function Calling|
 |open-mistral-nemo-2407 | Prompt|
@@ -179,7 +181,10 @@ Below is _a table of models we support_ to run our leaderboard evaluation agains
 |ibm-granite/granite-20b-functioncalling 💻| Function Calling|
 |yi-large-fc | Function Calling|
 |MadeAgents/Hammer-7b 💻| Function Calling|
-|BitAgent/GoGoAgent | Function Calling|
+|BitAgent/GoGoAgent 💻| Prompt|
+|Qwen/Qwen2.5-{1.5B,7B}-Instruct 💻| Prompt|
+|Qwen/Qwen2-{1.5B,7B}-Instruct 💻| Prompt|
+|Team-ACE/ToolACE-8B 💻| Function Calling|
 
 Here {MODEL} 💻 means the model needs to be hosted locally and called by vllm, {MODEL} means the models that are called API calls. For models with a trailing `-FC`, it means that the model supports function-calling feature. You can check out the table summarizing feature supports among different models [here](https://gorilla.cs.berkeley.edu/blogs/8_berkeley_function_calling_leaderboard.html#prompt).
 
